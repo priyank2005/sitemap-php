@@ -6,8 +6,8 @@
  * This class used for generating Google Sitemap files
  *
  * @package    Sitemap
- * @author     Osman Üngür <osmanungur@gmail.com>
- * @copyright  2009-2011 Osman Üngür
+ * @author     Osman ÃœngÃ¼r <osmanungur@gmail.com>
+ * @copyright  2009-2011 Osman ÃœngÃ¼r
  * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  * @version    Version @package_version@
  * @since      Class available since Version 1.0.0
@@ -46,11 +46,11 @@ class Sitemap {
 		$this->setDomain($domain);
 		if ($siteMapType!=NULL){
 			if ($siteMapType==self::SITEMAP_TYPE_WEBPAGES)
-				$this->siteMapType=self::SITEMAP_TYPE_WEBPAGES;
+			$this->siteMapType=self::SITEMAP_TYPE_WEBPAGES;
 			else if ($siteMapType==self::SITEMAP_TYPE_NEWS)
-				$this->siteMapType=self::SITEMAP_TYPE_NEWS;
+			$this->siteMapType=self::SITEMAP_TYPE_NEWS;
 			else
-				 throw new Exception('Unavailable SiteMap Type');
+			throw new Exception('Unavailable SiteMap Type');
 		}else{
 			$this->siteMapType=self::SITEMAP_TYPE_WEBPAGES;
 		}
@@ -87,7 +87,7 @@ class Sitemap {
 	/**
 	 * Assigns XMLWriter object instance
 	 *
-	 * @param XMLWriter $writer 
+	 * @param XMLWriter $writer
 	 */
 	private function setWriter(XMLWriter $writer) {
 		$this->writer = $writer;
@@ -95,7 +95,7 @@ class Sitemap {
 
 	/**
 	 * Returns path of sitemaps
-	 * 
+	 *
 	 * @return string
 	 */
 	private function getPath() {
@@ -104,7 +104,7 @@ class Sitemap {
 
 	/**
 	 * Sets paths of sitemaps
-	 * 
+	 *
 	 * @param string $path
 	 * @return Sitemap
 	 */
@@ -115,7 +115,7 @@ class Sitemap {
 
 	/**
 	 * Returns filename of sitemap file
-	 * 
+	 *
 	 * @return string
 	 */
 	private function getFilename() {
@@ -124,7 +124,7 @@ class Sitemap {
 
 	/**
 	 * Sets filename of sitemap file
-	 * 
+	 *
 	 * @param string $filename
 	 * @return Sitemap
 	 */
@@ -144,7 +144,7 @@ class Sitemap {
 
 	/**
 	 * Increases item counter
-	 * 
+	 *
 	 */
 	private function incCurrentItem() {
 		$this->current_item = $this->current_item + 1;
@@ -161,7 +161,7 @@ class Sitemap {
 
 	/**
 	 * Increases sitemap file count
-	 * 
+	 *
 	 */
 	private function incCurrentSitemap() {
 		$this->current_sitemap = $this->current_sitemap + 1;
@@ -169,7 +169,7 @@ class Sitemap {
 
 	/**
 	 * Prepares sitemap XML document
-	 * 
+	 *
 	 */
 	private function startSitemap() {
 		$this->setWriter(new XMLWriter());
@@ -187,22 +187,22 @@ class Sitemap {
 	/**
 	 * Adds an item to sitemap
 	 *
-	 * @param string $loc URL of the page. This value must be less than 2,048 characters. 
+	 * @param string $loc URL of the page. This value must be less than 2,048 characters.
 	 * @param string $priority The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0.
 	 * @param string $changefreq How frequently the page is likely to change. Valid values are always, hourly, daily, weekly, monthly, yearly and never.
 	 * @param string|int $lastmod The date of last modification of url. Unix timestamp or any English textual datetime description.
 	 * @return Sitemap
 	 */
-	public function addItem($loc, $priority = self::DEFAULT_PRIORITY, $changefreq = NULL, $lastmod = NUL
-		, $newsName=NULL
-		, $newsLanguage=NULL
-		, $newsAccess=NULL
-		, $newsGenres=NULL
-		, $newsPublicationDate=NULL
-		, $newsTitle=NULL
-		, $newsKeywords=NULL
-		, $newsStockTickers=NULL
-		) {
+	public function addItem($loc, $priority = self::DEFAULT_PRIORITY, $changefreq = NULL, $lastmod = NULL
+	, $newsName=NULL
+	, $newsLanguage=NULL
+	, $newsAccess=NULL
+	, $newsGenres=NULL
+	, $newsPublicationDate=NULL
+	, $newsTitle=NULL
+	, $newsKeywords=NULL
+	, $newsStockTickers=NULL
+	) {
 		if (($this->getCurrentItem() % self::ITEM_PER_SITEMAP) == 0) {
 			if ($this->getWriter() instanceof XMLWriter) {
 				$this->endSitemap();
@@ -215,15 +215,15 @@ class Sitemap {
 		$this->getWriter()->writeElement('loc', $this->getDomain() . $loc);
 		$this->getWriter()->writeElement('priority', $priority);
 		if ($changefreq)
-			$this->getWriter()->writeElement('changefreq', $changefreq);
+		$this->getWriter()->writeElement('changefreq', $changefreq);
 		if ($lastmod)
-			$this->getWriter()->writeElement('lastmod', $this->getLastModifiedDate($lastmod));
+		$this->getWriter()->writeElement('lastmod', $this->getLastModifiedDate($lastmod));
 		if ($this->siteMapType==self::SITEMAP_TYPE_NEWS){
 			if (empty($newsPublicationDate)){
 				if (empty($lastmod))
-					$newsPublicationDate=$this->getLastModifiedDate(time());
+				$newsPublicationDate=$this->getLastModifiedDate(time());
 				else
-					$newsPublicationDate=$this->getLastModifiedDate($lastmod);
+				$newsPublicationDate=$this->getLastModifiedDate($lastmod);
 			}else{
 				$newsPublicationDate=$this->getLastModifiedDate($newsPublicationDate);
 			}
@@ -242,20 +242,19 @@ class Sitemap {
 			$this->getWriter()->writeElement('news:language', $newsLanguage);
 			$this->getWriter()->endElement();
 			if (!empty($newsAccess))
-				$this->getWriter()->writeElement('news:access', $newsAccess);
+			$this->getWriter()->writeElement('news:access', $newsAccess);
 			if (!empty($newsGenres))
-				$this->getWriter()->writeElement('news:genres', $newsGenres);
+			$this->getWriter()->writeElement('news:genres', $newsGenres);
 			$this->getWriter()->writeElement('news:publication_date', $newsPublicationDate);
 			$this->getWriter()->writeElement('news:title', $newsTitle);
 			if (!empty($newsKeywords))
-				$this->getWriter()->writeElement('news:keywords', $newsKeywords);
+			$this->getWriter()->writeElement('news:keywords', $newsKeywords);
 			if (!empty($newsStockTickers))
-				$this->getWriter()->writeElement('news:stock_tickers', $newsStockTickers);
+			$this->getWriter()->writeElement('news:stock_tickers', $newsStockTickers);
 			$this->getWriter()->endElement();
 		}
 		$this->getWriter()->endElement();
 		return $this;
-			}
 	}
 
 	/**
