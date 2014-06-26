@@ -25,6 +25,7 @@ class Sitemap {
 	private $filename = 'sitemap';
 	private $current_item = 0;
 	private $current_sitemap = 0;
+	private $siteMapType;
 
 	const EXT = '.xml';
 	const SCHEMA = 'http://www.sitemaps.org/schemas/sitemap/0.9';
@@ -33,12 +34,26 @@ class Sitemap {
 	const SEPERATOR = '-';
 	const INDEX_SUFFIX = 'index';
 
+	const SITEMAP_TYPE_WEBPAGES=0;
+	const SITEMAP_TYPE_NEWS=1;
+
 	/**
 	 *
 	 * @param string $domain
+	 * @param enum $siteMapType
 	 */
-	public function __construct($domain) {
+	public function __construct($domain, $siteMapType=null) {
 		$this->setDomain($domain);
+		if ($siteMapType!=NULL){
+			if ($siteMapType==self::SITEMAP_TYPE_WEBPAGES)
+				$this->siteMapType=self::SITEMAP_TYPE_WEBPAGES;
+			else if ($siteMapType==self::SITEMAP_TYPE_NEWS)
+				$this->siteMapType=self::SITEMAP_TYPE_NEWS;
+			else
+				 throw new Exception('Unavailable SiteMap Type');
+		}else{
+			$this->siteMapType=self::SITEMAP_TYPE_WEBPAGES;
+		}
 	}
 
 	/**
@@ -178,7 +193,16 @@ class Sitemap {
 	 * @param string|int $lastmod The date of last modification of url. Unix timestamp or any English textual datetime description.
 	 * @return Sitemap
 	 */
-	public function addItem($loc, $priority = self::DEFAULT_PRIORITY, $changefreq = NULL, $lastmod = NULL) {
+	public function addItem($loc, $priority = self::DEFAULT_PRIORITY, $changefreq = NULL, $lastmod = NUL
+		, $newsName=NULL
+		, $newsLanguage=NULL
+		, $newsAccess=NULL
+		, $newsGenres=NULL
+		, $newsPublicationDate=NULL
+		, $newsTitle=NULL
+		, $newsKeywords=NULL
+		, $newsStockTickers=NULL
+		) {
 		if (($this->getCurrentItem() % self::ITEM_PER_SITEMAP) == 0) {
 			if ($this->getWriter() instanceof XMLWriter) {
 				$this->endSitemap();
@@ -194,8 +218,44 @@ class Sitemap {
 			$this->getWriter()->writeElement('changefreq', $changefreq);
 		if ($lastmod)
 			$this->getWriter()->writeElement('lastmod', $this->getLastModifiedDate($lastmod));
+		if ($this->siteMapType==self::SITEMAP_TYPE_NEWS){
+			if (empty($newsPublicationDate)){
+				if (empty($lastmod))
+					$newsPublicationDate=$this->getLastModifiedDate(time());
+				else
+					$newsPublicationDate=$this->getLastModifiedDate($lastmod);
+			}else{
+				$newsPublicationDate=$this->getLastModifiedDate($newsPublicationDate);
+			}
+			if (empty($newsTitle)){
+				throw new Exception("Please add Title for news type of sitemap", 1);
+			}
+			if (empty($newsName)){
+				throw new Exception("Please add Name for news type of sitemap", 1);
+			}
+			if (empty($newsLanguage)){
+				throw new Exception("Please add Language for news type of sitemap", 1);
+			}
+			$this->getWriter()->startElement('news:news');
+			$this->getWriter()->startElement('news:publication');
+			$this->getWriter()->writeElement('news:name', $newsName);
+			$this->getWriter()->writeElement('news:language', $newsLanguage);
+			$this->getWriter()->endElement();
+			if (!empty($newsAccess))
+				$this->getWriter()->writeElement('news:access', $newsAccess);
+			if (!empty($newsGenres))
+				$this->getWriter()->writeElement('news:genres', $newsGenres);
+			$this->getWriter()->writeElement('news:publication_date', $newsPublicationDate);
+			$this->getWriter()->writeElement('news:title', $newsTitle);
+			if (!empty($newsKeywords))
+				$this->getWriter()->writeElement('news:keywords', $newsKeywords);
+			if (!empty($newsStockTickers))
+				$this->getWriter()->writeElement('news:stock_tickers', $newsStockTickers);
+			$this->getWriter()->endElement();
+		}
 		$this->getWriter()->endElement();
 		return $this;
+			}
 	}
 
 	/**
@@ -206,10 +266,10 @@ class Sitemap {
 	 */
 	private function getLastModifiedDate($date) {
 		if (ctype_digit($date)) {
-			return date('Y-m-d', $date);
+			return date(DateTime::ATOM, $date);
 		} else {
 			$date = strtotime($date);
-			return date('Y-m-d', $date);
+			return date(DateTime::ATOM, $date);
 		}
 	}
 
