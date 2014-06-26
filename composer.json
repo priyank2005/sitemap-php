@@ -1,4 +1,7 @@
 {
     "name": "priyank2005/sitemap",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "autoload": {
+        "psr-0": { "Sitemap": "/" }
+    }
 }
